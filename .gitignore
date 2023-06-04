@@ -1,0 +1,6 @@
+__pycache___
+__pycache__/
+runs
+gprgym.egg-info/
+checkpoints
+gprgym/wandb
