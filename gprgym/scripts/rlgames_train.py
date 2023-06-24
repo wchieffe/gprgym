@@ -42,7 +42,7 @@ from rl_games.torch_runner import Runner
 
 import datetime
 import os
-import torch
+
 
 class RLGTrainer():
     def __init__(self, cfg, cfg_dict):

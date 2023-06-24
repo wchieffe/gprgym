@@ -51,7 +51,7 @@ class FrankaCabinetTask(RLTask):
         self.start_rotation_noise = self._task_cfg["env"]["startRotationNoise"]
         self.num_props = self._task_cfg["env"]["numProps"]
 
-        self.dof_vel_scale = self._task_cfg["env"]["dofVelocityScale"]
+        self.joint_vel_scale = self._task_cfg["env"]["jointVelocityScale"]
         self.dist_reward_scale = self._task_cfg["env"]["distRewardScale"]
         self.rot_reward_scale = self._task_cfg["env"]["rotRewardScale"]
         self.around_handle_reward_scale = self._task_cfg["env"]["aroundHandleRewardScale"]
@@ -189,7 +189,7 @@ class FrankaCabinetTask(RLTask):
         self.gripper_up_axis = torch.tensor([0, 1, 0], device=self._device, dtype=torch.float).repeat((self._num_envs, 1))
         self.drawer_up_axis = torch.tensor([0, 0, 1], device=self._device, dtype=torch.float).repeat((self._num_envs, 1))
 
-        self.franka_default_dof_pos = torch.tensor(
+        self.franka_default_joint_pos = torch.tensor(
             [1.157, -1.066, -0.155, -2.239, -1.841, 1.003, 0.469, 0.035, 0.035], device=self._device
         )
 
@@ -198,11 +198,11 @@ class FrankaCabinetTask(RLTask):
     def get_observations(self) -> dict:
         hand_pos, hand_rot = self._frankas._hands.get_world_poses(clone=False)
         drawer_pos, drawer_rot = self._cabinets._drawers.get_world_poses(clone=False)
-        franka_dof_pos = self._frankas.get_joint_positions(clone=False)
-        franka_dof_vel = self._frankas.get_joint_velocities(clone=False)
-        self.cabinet_dof_pos = self._cabinets.get_joint_positions(clone=False)
-        self.cabinet_dof_vel = self._cabinets.get_joint_velocities(clone=False)
-        self.franka_dof_pos = franka_dof_pos
+        franka_joint_pos = self._frankas.get_joint_positions(clone=False)
+        franka_joint_vel = self._frankas.get_joint_velocities(clone=False)
+        self.cabinet_joint_pos = self._cabinets.get_joint_positions(clone=False)
+        self.cabinet_joint_vel = self._cabinets.get_joint_velocities(clone=False)
+        self.franka_joint_pos = franka_joint_pos
 
         self.franka_grasp_rot, self.franka_grasp_pos, self.drawer_grasp_rot, self.drawer_grasp_pos = self.compute_grasp_transforms(
             hand_rot,
@@ -218,20 +218,20 @@ class FrankaCabinetTask(RLTask):
         self.franka_lfinger_pos, self.franka_lfinger_rot = self._frankas._lfingers.get_world_poses(clone=False)
         self.franka_rfinger_pos, self.franka_rfinger_rot = self._frankas._lfingers.get_world_poses(clone=False)
 
-        dof_pos_scaled = (
+        joint_pos_scaled = (
             2.0
-            * (franka_dof_pos - self.franka_dof_lower_limits)
-            / (self.franka_dof_upper_limits - self.franka_dof_lower_limits)
+            * (franka_joint_pos - self.franka_joint_lower_limits)
+            / (self.franka_joint_upper_limits - self.franka_joint_lower_limits)
             - 1.0
         )
         to_target = self.drawer_grasp_pos - self.franka_grasp_pos
         self.obs_buf = torch.cat(
             (
-                dof_pos_scaled,
-                franka_dof_vel * self.dof_vel_scale,
+                joint_pos_scaled,
+                franka_joint_vel * self.joint_vel_scale,
                 to_target,
-                self.cabinet_dof_pos[:, 3].unsqueeze(-1),
-                self.cabinet_dof_vel[:, 3].unsqueeze(-1),
+                self.cabinet_joint_pos[:, 3].unsqueeze(-1),
+                self.cabinet_joint_vel[:, 3].unsqueeze(-1),
             ),
             dim=-1,
         )
@@ -252,11 +252,11 @@ class FrankaCabinetTask(RLTask):
             self.reset_idx(reset_env_ids)
 
         self.actions = actions.clone().to(self._device)
-        targets = self.franka_dof_targets + self.franka_dof_speed_scales * self.dt * self.actions * self.action_scale
-        self.franka_dof_targets[:] = tensor_clamp(targets, self.franka_dof_lower_limits, self.franka_dof_upper_limits)
+        targets = self.franka_joint_targets + self.franka_joint_speed_scales * self.dt * self.actions * self.action_scale
+        self.franka_joint_targets[:] = tensor_clamp(targets, self.franka_joint_lower_limits, self.franka_joint_upper_limits)
         env_ids_int32 = torch.arange(self._frankas.count, dtype=torch.int32, device=self._device)
 
-        self._frankas.set_joint_position_targets(self.franka_dof_targets, indices=env_ids_int32)
+        self._frankas.set_joint_position_targets(self.franka_joint_targets, indices=env_ids_int32)
 
     def reset_idx(self, env_ids):
         indices = env_ids.to(dtype=torch.int32)
@@ -264,16 +264,16 @@ class FrankaCabinetTask(RLTask):
 
         # reset franka
         pos = tensor_clamp(
-            self.franka_default_dof_pos.unsqueeze(0)
-            + 0.25 * (torch.rand((len(env_ids), self.num_franka_dofs), device=self._device) - 0.5),
-            self.franka_dof_lower_limits,
-            self.franka_dof_upper_limits,
+            self.franka_default_joint_pos.unsqueeze(0)
+            + 0.25 * (torch.rand((len(env_ids), self.num_franka_joints), device=self._device) - 0.5),
+            self.franka_joint_lower_limits,
+            self.franka_joint_upper_limits,
         )
-        dof_pos = torch.zeros((num_indices, self._frankas.num_dof), device=self._device)
-        dof_vel = torch.zeros((num_indices, self._frankas.num_dof), device=self._device)
-        dof_pos[:, :] = pos
-        self.franka_dof_targets[env_ids, :] = pos
-        self.franka_dof_pos[env_ids, :] = pos
+        joint_pos = torch.zeros((num_indices, self._frankas.num_joint), device=self._device)
+        joint_vel = torch.zeros((num_indices, self._frankas.num_joint), device=self._device)
+        joint_pos[:, :] = pos
+        self.franka_joint_targets[env_ids, :] = pos
+        self.franka_joint_pos[env_ids, :] = pos
 
         # reset cabinet
         self._cabinets.set_joint_positions(torch.zeros_like(self._cabinets.get_joint_positions(clone=False)[env_ids]), indices=indices)
@@ -287,9 +287,9 @@ class FrankaCabinetTask(RLTask):
                 self.prop_indices[env_ids].flatten().to(torch.int32)
         )
 
-        self._frankas.set_joint_position_targets(self.franka_dof_targets[env_ids], indices=indices)
-        self._frankas.set_joint_positions(dof_pos, indices=indices)
-        self._frankas.set_joint_velocities(dof_vel, indices=indices)
+        self._frankas.set_joint_position_targets(self.franka_joint_targets[env_ids], indices=indices)
+        self._frankas.set_joint_positions(joint_pos, indices=indices)
+        self._frankas.set_joint_velocities(joint_vel, indices=indices)
 
         # bookkeeping
         self.reset_buf[env_ids] = 0
@@ -297,15 +297,15 @@ class FrankaCabinetTask(RLTask):
 
     def post_reset(self):
 
-        self.num_franka_dofs = self._frankas.num_dof
-        self.franka_dof_pos = torch.zeros((self.num_envs, self.num_franka_dofs), device=self._device)
-        dof_limits = self._frankas.get_dof_limits()
-        self.franka_dof_lower_limits = dof_limits[0, :, 0].to(device=self._device)
-        self.franka_dof_upper_limits = dof_limits[0, :, 1].to(device=self._device)
-        self.franka_dof_speed_scales = torch.ones_like(self.franka_dof_lower_limits)
-        self.franka_dof_speed_scales[self._frankas.gripper_indices] = 0.1
-        self.franka_dof_targets = torch.zeros(
-            (self._num_envs, self.num_franka_dofs), dtype=torch.float, device=self._device
+        self.num_franka_joints = self._frankas.num_joint
+        self.franka_joint_pos = torch.zeros((self.num_envs, self.num_franka_joints), device=self._device)
+        joint_limits = self._frankas.get_joint_limits()
+        self.franka_joint_lower_limits = joint_limits[0, :, 0].to(device=self._device)
+        self.franka_joint_upper_limits = joint_limits[0, :, 1].to(device=self._device)
+        self.franka_joint_speed_scales = torch.ones_like(self.franka_joint_lower_limits)
+        self.franka_joint_speed_scales[self._frankas.gripper_indices] = 0.1
+        self.franka_joint_targets = torch.zeros(
+            (self._num_envs, self.num_franka_joints), dtype=torch.float, device=self._device
         )
 
         if self.num_props > 0:
@@ -320,18 +320,18 @@ class FrankaCabinetTask(RLTask):
 
     def calculate_metrics(self) -> None:
         self.rew_buf[:] = self.compute_franka_reward(
-            self.reset_buf, self.progress_buf, self.actions, self.cabinet_dof_pos,
+            self.reset_buf, self.progress_buf, self.actions, self.cabinet_joint_pos,
             self.franka_grasp_pos, self.drawer_grasp_pos, self.franka_grasp_rot, self.drawer_grasp_rot,
             self.franka_lfinger_pos, self.franka_rfinger_pos,
             self.gripper_forward_axis, self.drawer_inward_axis, self.gripper_up_axis, self.drawer_up_axis,
             self._num_envs, self.dist_reward_scale, self.rot_reward_scale, self.around_handle_reward_scale, self.open_reward_scale,
-            self.finger_dist_reward_scale, self.action_penalty_scale, self.distX_offset, self._max_episode_length, self.franka_dof_pos,
+            self.finger_dist_reward_scale, self.action_penalty_scale, self.distX_offset, self._max_episode_length, self.franka_joint_pos,
             self.finger_close_reward_scale,
         )
 
     def is_done(self) -> None:
         # reset if drawer is open or max length reached
-        self.reset_buf = torch.where(self.cabinet_dof_pos[:, 3] > 0.39, torch.ones_like(self.reset_buf), self.reset_buf)
+        self.reset_buf = torch.where(self.cabinet_joint_pos[:, 3] > 0.39, torch.ones_like(self.reset_buf), self.reset_buf)
         self.reset_buf = torch.where(self.progress_buf >= self._max_episode_length - 1, torch.ones_like(self.reset_buf), self.reset_buf)
 
     def compute_grasp_transforms(
@@ -356,7 +356,7 @@ class FrankaCabinetTask(RLTask):
         return global_franka_rot, global_franka_pos, global_drawer_rot, global_drawer_pos
 
     def compute_franka_reward(
-        self, reset_buf, progress_buf, actions, cabinet_dof_pos,
+        self, reset_buf, progress_buf, actions, cabinet_joint_pos,
         franka_grasp_pos, drawer_grasp_pos, franka_grasp_rot, drawer_grasp_rot,
         franka_lfinger_pos, franka_rfinger_pos,
         gripper_forward_axis, drawer_inward_axis, gripper_up_axis, drawer_up_axis,
@@ -402,16 +402,16 @@ class FrankaCabinetTask(RLTask):
         action_penalty = torch.sum(actions ** 2, dim=-1)
 
         # how far the cabinet has been opened out
-        open_reward = cabinet_dof_pos[:, 3] * around_handle_reward + cabinet_dof_pos[:, 3]  # drawer_top_joint
+        open_reward = cabinet_joint_pos[:, 3] * around_handle_reward + cabinet_joint_pos[:, 3]  # drawer_top_joint
 
         rewards = dist_reward_scale * dist_reward + rot_reward_scale * rot_reward \
             + around_handle_reward_scale * around_handle_reward + open_reward_scale * open_reward \
             + finger_dist_reward_scale * finger_dist_reward - action_penalty_scale * action_penalty + finger_close_reward * finger_close_reward_scale
 
         # bonus for opening drawer properly
-        rewards = torch.where(cabinet_dof_pos[:, 3] > 0.01, rewards + 0.5, rewards)
-        rewards = torch.where(cabinet_dof_pos[:, 3] > 0.2, rewards + around_handle_reward, rewards)
-        rewards = torch.where(cabinet_dof_pos[:, 3] > 0.39, rewards + (2.0 * around_handle_reward), rewards)
+        rewards = torch.where(cabinet_joint_pos[:, 3] > 0.01, rewards + 0.5, rewards)
+        rewards = torch.where(cabinet_joint_pos[:, 3] > 0.2, rewards + around_handle_reward, rewards)
+        rewards = torch.where(cabinet_joint_pos[:, 3] > 0.39, rewards + (2.0 * around_handle_reward), rewards)
 
         # # prevent bad style in opening drawer
         # rewards = torch.where(franka_lfinger_pos[:, 0] < drawer_grasp_pos[:, 0] - distX_offset,
