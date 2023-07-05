@@ -31,22 +31,45 @@ controller = PickPlaceController(
 )
 franka.gripper.set_joint_positions(franka.gripper.joint_opened_positions)
 
-try:
-    while True:
-        cube_position, _ = fancy_cube.get_world_pose()
-        goal_position = np.array([-0.3, -0.3, 0.0515 / 2.0])
-        current_joint_positions = franka.get_joint_positions()
-        actions = controller.forward(
-            picking_position=cube_position,
-            placing_position=goal_position,
-            current_joint_positions=current_joint_positions,
-        )
-        franka.apply_action(actions)
-        # Only for the pick and place controller, indicating if the state
-        # machine reached the final state.
-        if controller.is_done():
-            world.pause()
-            break
-        world.step(render=True) 
-finally:
-    simulation_app.close() # close Isaac Sim
+def pick_place():
+    try:
+        while True:
+            cube_position, _ = fancy_cube.get_world_pose()
+            goal_position = np.array([-0.3, -0.3, 0.0515 / 2.0])
+            current_joint_positions = franka.get_joint_positions()
+            actions = controller.forward(
+                picking_position=cube_position,
+                placing_position=goal_position,
+                current_joint_positions=current_joint_positions,
+            )
+            franka.apply_action(actions)
+            # Only for the pick and place controller, indicating if the state
+            # machine reached the final state.
+            if controller.is_done():
+                world.pause()
+                break
+            world.step(render=True) 
+    finally:
+        simulation_app.close() # close Isaac Sim
+
+import time
+import zmq
+
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+socket.bind("tcp://*:5555")
+
+while True:
+    print("loop")
+    world.step(render=True) 
+
+    #  Wait for next request from client
+    message = socket.recv()
+    print(f"Received request: {message}")
+
+    if message == b"pick":
+        pick_place()
+    elif message == b"exit":
+        break
+
+    time.sleep(1)
