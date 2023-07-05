@@ -52,24 +52,25 @@ def pick_place():
     finally:
         simulation_app.close() # close Isaac Sim
 
+
+import signal
 import time
 import zmq
 
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.bind("tcp://*:5555")
+socket.bind("tcp://*:5558")
 
 while True:
-    print("loop")
-    world.step(render=True) 
-
-    #  Wait for next request from client
     message = socket.recv()
     print(f"Received request: {message}")
 
     if message == b"pick":
         pick_place()
-    elif message == b"exit":
-        break
+
+    response = b"Success!"
+    socket.send(response)
 
     time.sleep(1)
