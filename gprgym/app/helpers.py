@@ -54,6 +54,7 @@ def move_to_position(world, franka):
         name="rmp_flow_controller",
         robot_articulation=franka,
     )
+    articulation_controller = franka.get_articulation_controller()
     waypoints = np.array([
         [0.5, 0.3, 0.2],
         [0.5, 0.4, 0.2],
@@ -76,11 +77,14 @@ def move_to_position(world, franka):
         while True:
             gripper_current_position = franka.gripper.get_world_pose()[0]
             diff = np.sum(np.abs(gripper_current_position - gripper_target_position))
-            if diff < 0.05:
+            print("current position: ", gripper_current_position)
+            print("target position: ", gripper_target_position)
+            print("diff: ", diff)
+            if diff < 0.1:
                 break
-            action = controller.forward(
+            actions = controller.forward(
                 target_end_effector_position = gripper_target_position
             )
-            franka.apply_action(action)
+            articulation_controller.apply_action(actions)
             world.step(render=True)
     return
