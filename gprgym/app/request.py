@@ -5,7 +5,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 response = openai.Completion.create(
   model="text-davinci-003",
-  prompt="Write a tagline for an ice cream shop.",
+  prompt="provide a list of x,y,z coordinates along a path that makes a franka robot arm look like it's waving",
   temperature=0.4,
   max_tokens=64,
   top_p=1,

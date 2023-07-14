@@ -1,31 +1,38 @@
 from fastapi import FastAPI
+import logging
 import uvicorn
+import zmq
 
-from helpers import is_simulation_running, launch_simulation, stop_simulation_process
+from helpers import launch_sim, kill_sim
 
 app = FastAPI()
+context = zmq.Context()
+socket = None
 
-@app.get("/start-simulation")
-def start_simulation():
-    # Check if the simulation is already running
-    if is_simulation_running():
-        return {"message": "Simulation is already running."}
 
-    # Launch Isaac Sim in headless mode
-    launch_simulation()
+@app.on_event("startup")
+async def startup_event():
+    logging.info("Starting simulation")
+    launch_sim()
+    global socket
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5558")
 
-    return {"message": "Simulation started."}
 
-@app.get("/stop-simulation")
-def stop_simulation():
-    # Check if the simulation is running
-    if not is_simulation_running():
-        return {"message": "Simulation is not running."}
+@app.on_event("shutdown")
+async def shutdown_event():
+    kill_sim()
+    logging.info("Shutting down simulation")
+    socket.close()
+    context.term()
 
-    # Stop the Isaac Sim process
-    stop_simulation_process()
 
-    return {"message": "Simulation stopped."}
+@app.get("/pick")
+def send_pick_command():
+    socket.send(b"pick")
+    message = socket.recv()
+    print(f"Received response: {message}")
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

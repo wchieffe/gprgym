@@ -1,13 +1,15 @@
-#launch Isaac Sim before any other imports
-#default first two lines in any standalone application
+# Launch Isaac Sim before any other imports
+# Default first two lines in any standalone application
 from omni.isaac.kit import SimulationApp
-simulation_app = SimulationApp({"headless": False}) # we can also run as headless.
+simulation_app = SimulationApp({"headless": False})
 
 import signal
 import time
 import zmq
 
-from helpers import setup_scene, pick_place, move_to_position
+from scene.basic import setup_scene
+from skills.move_to import move_to_position
+from skills.pick_place import pick_place
 
 if __name__ == "__main__":
     world, franka, fancy_cube = setup_scene()
@@ -34,4 +36,4 @@ if __name__ == "__main__":
 
         time.sleep(1)
 
-    simulation_app.close() # close Isaac Sim
+    simulation_app.close()
