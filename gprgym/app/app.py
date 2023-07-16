@@ -1,13 +1,20 @@
 from fastapi import FastAPI
 import logging
+from pydantic import BaseModel
 import uvicorn
 import zmq
 
-from helpers import launch_sim, kill_sim
+from app.agents import BaseAgent
+from utils.sim_functions import launch_sim, kill_sim
 
 app = FastAPI()
+agent = BaseAgent()
 context = zmq.Context()
 socket = None
+
+
+class GptRequest(BaseModel):
+    prompt: str
 
 
 @app.on_event("startup")
@@ -31,7 +38,14 @@ async def shutdown_event():
 def send_pick_command():
     socket.send(b"pick")
     message = socket.recv()
-    print(f"Received response: {message}")
+    return {"result": message}
+
+
+@app.post("/text_command")
+def update_item(request: GptRequest):
+    
+    response = agent.user_prompt(request.prompt)
+    return {"Response: ": response}
 
 
 if __name__ == "__main__":

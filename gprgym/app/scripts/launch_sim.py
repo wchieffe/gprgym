@@ -7,9 +7,9 @@ import signal
 import time
 import zmq
 
-from scene.basic import setup_scene
-from skills.move_to import move_to_position
-from skills.pick_place import pick_place
+from app.skills.basic_scene import setup_scene
+from app.skills.move_to import move_to_position
+from app.skills.pick_place import pick_place
 
 if __name__ == "__main__":
     world, franka, fancy_cube = setup_scene()
