@@ -36,19 +36,14 @@ def update_item(request: str):
     return {"Response: ": response}
 
 
-@app.get("/pick")
-def send_command():
-    socket.send(b"PickPlace")
-    message = socket.recv()
-    return {"result": message}
-
-# TODO: For debugging purposes, create dedicated endpoint for each skill
-# for skill_name, skill_class in load_skills().items():
-#     @app.get("/" + skill_name)
-#     def send_command(**kwargs):
-#         socket.send(bytes(name))
-#         message = socket.recv()
-#         return {"result": message}
+# For debugging purposes, create dedicated endpoint for each skill
+for skill_name, skill_class in load_skills().items():
+    @app.get("/" + skill_name)
+    def send_command(args: skill_class.args_schema):
+        payload = {"skill_name": skill_name, "args": args}
+        socket.send_json(payload)
+        message = socket.recv()
+        return {"result": message}
 
 
 if __name__ == "__main__":

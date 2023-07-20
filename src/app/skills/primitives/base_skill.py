@@ -28,7 +28,6 @@ class BaseSkill(ABC):
 
     def as_tool(self):
         def tool_func(args: self.args_schema):
-            self.socket.send(bytes(self.class_name, 'utf-8'))
             payload = {"skill_name": self.class_name, "args": args}
             self.socket.send_json(payload)
             message = self.socket.recv()
