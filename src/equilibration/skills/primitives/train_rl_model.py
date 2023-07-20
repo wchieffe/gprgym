@@ -1,4 +1,4 @@
-from app.skills import BaseSkill
+from equilibration.skills import BaseSkill
 
 class TrainRlModel(BaseSkill):
     def  __init__():

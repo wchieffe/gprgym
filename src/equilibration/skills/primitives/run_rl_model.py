@@ -1,4 +1,4 @@
-from app.skills import BaseSkill
+from equilibration.skills import BaseSkill
 
 class RunRlModel(BaseSkill):
     def  __init__():

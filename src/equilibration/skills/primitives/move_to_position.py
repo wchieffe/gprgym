@@ -4,7 +4,7 @@ from typing import List
 
 from omni.isaac.franka.controllers import RMPFlowController
 
-from app.skills import BaseSkill
+from equilibration.skills import BaseSkill
 
 
 class Coordinates(BaseModel):

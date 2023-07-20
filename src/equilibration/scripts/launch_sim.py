@@ -10,7 +10,7 @@ from omni.isaac.core import World
 from omni.isaac.core.objects import DynamicCuboid
 from omni.isaac.franka import Franka
 
-from app.utils.skill_utils import load_skills
+from equilibration.utils.skill_utils import load_skills
 
 
 class Scene:
