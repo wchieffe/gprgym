@@ -5,3 +5,4 @@
 Git pull
 2. Create OpenAI API token
 3. Create .env file
+4. Run app.py

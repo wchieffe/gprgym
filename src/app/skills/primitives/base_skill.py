@@ -1,5 +1,6 @@
 from abc import ABC
 from langchain.tools import StructuredTool
+import logging
 import zmq
 
 
@@ -12,13 +13,20 @@ class BaseSkill(ABC):
         if self.description == None:
             raise ValueError(f"Must define description in {self.class_name}.")
 
+        # args_schema should be defined in the inherited class unless there are no args
+        try:
+            self.args_schema = self.args_schema
+        except AttributeError:
+            logging.warn(f"Best practice is to define args_schema in {self.class_name} before calling super().__init__()")
+            logging.warn(f"If there are no args, specify self.args_schema = None.")
+            self.args_schema = None
+
 
     def execute(self):
         raise NotImplementedError('Execute method must be implemented in subclass.')
 
 
     def as_tool(self):
-        # TODO: Review this
         def tool_func(args: self.args_schema):
             self.socket.send(bytes(self.class_name, 'utf-8'))
             payload = {"skill_name": self.class_name, "args": args}
