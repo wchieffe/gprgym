@@ -39,7 +39,7 @@ def update_item(request: str):
 # For debugging purposes, create dedicated endpoint for each skill
 for skill_name, skill_class in load_skills().items():
     @app.get("/" + skill_name)
-    def send_command(args: skill_class.args_schema):
+    def send_command(args: skill_class.args_schema = None):
         payload = {"skill_name": skill_name, "args": args}
         socket.send_json(payload)
         message = socket.recv()

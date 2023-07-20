@@ -10,6 +10,7 @@ class BaseSkill(ABC):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect("tcp://localhost:5558")
+
         if self.description == None:
             raise ValueError(f"Must define description in {self.class_name}.")
 
@@ -27,7 +28,7 @@ class BaseSkill(ABC):
 
 
     def as_tool(self):
-        def tool_func(args: self.args_schema):
+        def tool_func(args: self.args_schema = None):
             payload = {"skill_name": self.class_name, "args": args}
             self.socket.send_json(payload)
             message = self.socket.recv()
