@@ -1,20 +1,16 @@
 from fastapi import FastAPI
 import logging
-from pydantic import BaseModel
 import uvicorn
 import zmq
 
 from app.agents import BaseAgent
-from utils.sim_functions import launch_sim, kill_sim
+from app.utils.sim import launch_sim, kill_sim
+from app.utils.skills import load_skills
 
 app = FastAPI()
 agent = BaseAgent()
 context = zmq.Context()
 socket = None
-
-
-class GptRequest(BaseModel):
-    prompt: str
 
 
 @app.on_event("startup")
@@ -34,18 +30,26 @@ async def shutdown_event():
     context.term()
 
 
+@app.post("/user_input")
+def update_item(request: str):
+    response = agent.user_input(request)
+    return {"Response: ": response}
+
+
 @app.get("/pick")
-def send_pick_command():
-    socket.send(b"pick")
+def send_command():
+    socket.send(b"PickPlace")
     message = socket.recv()
     return {"result": message}
 
-
-@app.post("/text_command")
-def update_item(request: GptRequest):
-    
-    response = agent.user_prompt(request.prompt)
-    return {"Response: ": response}
+# TODO: For debugging purposes, create dedicated endpoint for each skill
+# for skill in load_skills():
+#     name = type(skill).__name__
+#     @app.get("/" + name)
+#     def send_command(**kwargs):
+#         socket.send(bytes(name))
+#         message = socket.recv()
+#         return {"result": message}
 
 
 if __name__ == "__main__":

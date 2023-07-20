@@ -1,40 +1,24 @@
 from dotenv import load_dotenv
-import openai
-import os
-import importlib
+from langchain.agents import AgentType, initialize_agent
+from langchain.llms import OpenAI
+
+from app.utils.skills import load_skills
 
 load_dotenv()
 
-
 class BaseAgent:
     def __init__(self):
-        openai.api_key = os.getenv("OPENAI_API_KEY")
+        # Build array of langchain tools  based on the skills defined throughout /skills directory
+        self.tools = []
+        skills = load_skills()
+        for skill in skills:
+            self.tools.append(skill.as_tool())
 
-        # Populate skills attribute based on objects defined throughout /skills directory
-        skills_path = os.path.join(os.path.dirname(__file__), 'skills')
-        skill_files = [file for file in os.listdir(skills_path) if file.endswith('.py')]
-        self.skills = []
-        for skill_file in skill_files:
-            module_name = f'skills.{os.path.splitext(skill_file)[0]}'
-            module = importlib.import_module(module_name)
-            skill_class = getattr(module, os.path.splitext(skill_file)[0].capitalize())
-            skill_object = skill_class()
-            self.skills.append(skill_object)
+        # Initialize the LLM agent using those tools
+        llm = OpenAI(temperature=0)
+        self.agent = initialize_agent(self.tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
 
 
-    def user_prompt(self, prompt):
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                "role": "user",
-                "content": prompt
-                }
-            ],
-            temperature=0.5,
-            max_tokens=64,
-            top_p=1.0,
-            frequency_penalty=0.0,
-            presence_penalty=0.0
-        )
+    def user_input(self, prompt):
+        response = self.agent.run(prompt)
         return response

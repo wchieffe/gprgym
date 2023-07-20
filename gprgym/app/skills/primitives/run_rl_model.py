@@ -1,8 +1,8 @@
 from app.skills import BaseSkill
 
-class TrainRLModel(BaseSkill):
+class RunRlModel(BaseSkill):
     def  __init__():
         pass
 
-    def fire(self):
+    def execute(self):
         pass
