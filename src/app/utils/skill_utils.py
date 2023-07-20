@@ -1,7 +1,7 @@
 import importlib.util
 import os
 
-def load_skills(directory=None, parent=''):
+def load_skills(directory=None, parent='') -> dict:
     skills = {}
     if directory == None:
         directory = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'skills')
