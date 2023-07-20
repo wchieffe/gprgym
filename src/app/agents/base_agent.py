@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from langchain.agents import AgentType, initialize_agent
 from langchain.llms import OpenAI
 
-from app.utils.skills import load_skills
+from app.utils.skill_utils import load_skills
 
 load_dotenv()
 

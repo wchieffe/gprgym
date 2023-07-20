@@ -4,8 +4,8 @@ import uvicorn
 import zmq
 
 from app.agents import BaseAgent
-from app.utils.sim import launch_sim, kill_sim
-from app.utils.skills import load_skills
+from app.utils.sim_utils import launch_sim, kill_sim
+from app.utils.skill_utils import load_skills
 
 app = FastAPI()
 agent = BaseAgent()

@@ -10,8 +10,7 @@ from omni.isaac.core import World
 from omni.isaac.core.objects import DynamicCuboid
 from omni.isaac.franka import Franka
 
-from app.skills import PickPlace, MoveToPosition
-from app.utils.skills import load_skills
+from app.utils.skill_utils import load_skills
 
 
 class Scene:

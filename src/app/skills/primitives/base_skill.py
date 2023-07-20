@@ -23,7 +23,7 @@ class BaseSkill(ABC):
             self.args_schema = None
 
 
-    def execute(self):
+    def execute(self, args, scene):
         raise NotImplementedError('Execute method must be implemented in subclass.')
 
 
