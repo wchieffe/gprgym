@@ -35,8 +35,8 @@ from omni.isaac.core.tasks import BaseTask
 from omni.isaac.core.utils.types import ArticulationAction
 from omni.isaac.core.utils.prims import define_prim
 from omni.isaac.cloner import GridCloner
-from gprgym.utils.usd_utils import create_distant_light
-from gprgym.utils.domain_randomization.randomize import Randomizer
+from src.utils.usd_utils import create_distant_light
+from src.utils.domain_randomization.randomize import Randomizer
 import omni.kit
 from omni.kit.viewport.utility.camera_state import ViewportCameraState
 from omni.kit.viewport.utility import get_viewport_from_window_name

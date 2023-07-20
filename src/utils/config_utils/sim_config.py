@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from gprgym.utils.config_utils.default_scene_params import *
+from src.utils.config_utils.default_scene_params import *
 import copy
 import omni.usd
 import numpy as np

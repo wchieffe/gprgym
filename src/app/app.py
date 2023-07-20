@@ -43,9 +43,8 @@ def send_command():
     return {"result": message}
 
 # TODO: For debugging purposes, create dedicated endpoint for each skill
-# for skill in load_skills():
-#     name = type(skill).__name__
-#     @app.get("/" + name)
+# for skill_name, skill_class in load_skills().items():
+#     @app.get("/" + skill_name)
 #     def send_command(**kwargs):
 #         socket.send(bytes(name))
 #         message = socket.recv()

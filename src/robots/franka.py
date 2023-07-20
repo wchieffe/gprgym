@@ -15,7 +15,7 @@ import torch
 from omni.isaac.core.robots.robot import Robot
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.core.utils.stage import add_reference_to_stage
-from gprgym.utils.usd_utils import set_drive
+from src.utils.usd_utils import set_drive
 
 from omni.isaac.core.utils.prims import get_prim_at_path
 from pxr import PhysxSchema

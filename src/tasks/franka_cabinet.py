@@ -7,11 +7,11 @@
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 #
 
-from gprgym.tasks.base.rl_task import RLTask
-from gprgym.robots.franka import Franka
-from gprgym.robots.cabinet import Cabinet
-from gprgym.robots.views.franka_view import FrankaView
-from gprgym.robots.views.cabinet_view import CabinetView
+from src.tasks.base.rl_task import RLTask
+from src.robots.franka import Franka
+from src.robots.cabinet import Cabinet
+from src.robots.views.franka_view import FrankaView
+from src.robots.views.cabinet_view import CabinetView
 
 from omni.isaac.core.objects import DynamicCuboid
 from omni.isaac.core.prims import RigidPrim, RigidPrimView

@@ -31,7 +31,7 @@ def initialize_task(config, env, init_sim=True):
     from .config_utils.sim_config import SimConfig
     sim_config = SimConfig(config)
 
-    from gprgym.tasks.gpr_basketball import GprBasketballTask
+    from src.tasks.gpr_basketball import GprBasketballTask
 
     # Mappings from strings to environments
     task_map = {

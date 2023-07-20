@@ -2,7 +2,7 @@ import importlib.util
 import os
 
 def load_skills(directory=None, parent=''):
-    skills = []
+    skills = {}
     if directory == None:
         directory = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'skills')
 
@@ -12,10 +12,10 @@ def load_skills(directory=None, parent=''):
 
         if os.path.isdir(path):
             # Recurse if it's a directory
-            skills.extend(load_skills(path, module_name))
+            skills.update(load_skills(path, module_name))
         elif filename.endswith('.py') and not filename.startswith('__'):
             # Load the module
-            # TODO: Add error-handling once I start testing in VM
+            # TODO: Add error-handling once I start testing in VM (and avoid importing unfinished skills)
             module_spec = importlib.util.spec_from_file_location(module_name, path)
             module = importlib.util.module_from_spec(module_spec)
             module_spec.loader.exec_module(module) # TODO: Speed up
@@ -23,6 +23,6 @@ def load_skills(directory=None, parent=''):
             # Get the class from the module
             class_name = filename.split('.')[0].replace("_", " ").title().replace(" ", "")
             skill_class = getattr(module, class_name)
-            skills.append(skill_class())
+            skills[class_name] = skill_class()
 
     return skills

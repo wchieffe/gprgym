@@ -27,12 +27,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from gprgym.utils.hydra_cfg.hydra_utils import *
-from gprgym.utils.hydra_cfg.reformat import omegaconf_to_dict, print_dict
-from gprgym.utils.rlgames.rlgames_utils import RLGPUAlgoObserver, RLGPUEnv
-from gprgym.utils.task_util import initialize_task
-from gprgym.utils.config_utils.path_utils import retrieve_checkpoint_path
-from gprgym.envs.vec_env_rlgames import VecEnvRLGames
+from src.utils.hydra_cfg.hydra_utils import *
+from src.utils.hydra_cfg.reformat import omegaconf_to_dict, print_dict
+from src.utils.rlgames.rlgames_utils import RLGPUAlgoObserver, RLGPUEnv
+from src.utils.task_util import initialize_task
+from src.utils.config_utils.path_utils import retrieve_checkpoint_path
+from src.envs.vec_env_rlgames import VecEnvRLGames
 
 import hydra
 from omegaconf import DictConfig

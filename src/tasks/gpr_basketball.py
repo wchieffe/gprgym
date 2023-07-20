@@ -6,10 +6,10 @@ from omni.isaac.core.utils.prims import get_prim_at_path
 from omni.isaac.core.utils.torch import tensor_clamp
 from omni.isaac.gym.vec_env import VecEnvBase
 
-from gprgym.robots.franka import Franka
-from gprgym.robots.views.franka_view import FrankaView
-from gprgym.tasks.base.rl_task import RLTask
-from gprgym.utils.config_utils.sim_config import SimConfig
+from src.robots.franka import Franka
+from src.robots.views.franka_view import FrankaView
+from src.tasks.base.rl_task import RLTask
+from src.utils.config_utils.sim_config import SimConfig
 
 
 class GprBasketballTask(RLTask):

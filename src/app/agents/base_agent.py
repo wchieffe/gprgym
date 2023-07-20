@@ -10,9 +10,8 @@ class BaseAgent:
     def __init__(self):
         # Build array of langchain tools  based on the skills defined throughout /skills directory
         self.tools = []
-        skills = load_skills()
-        for skill in skills:
-            self.tools.append(skill.as_tool())
+        for _, skill_class in load_skills().items():
+            self.tools.append(skill_class.as_tool())
 
         # Initialize the LLM agent using those tools
         llm = OpenAI(temperature=0)
@@ -20,5 +19,7 @@ class BaseAgent:
 
 
     def user_input(self, prompt):
+        # TODO: Format prompt ("this is what the scene looks like. you are controlling a franka robot."). 
+        # No need to add tools to it; langchain does that
         response = self.agent.run(prompt)
         return response
