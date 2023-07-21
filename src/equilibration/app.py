@@ -2,7 +2,6 @@ from fastapi import FastAPI
 import logging
 import uvicorn
 
-
 from equilibration.agents import BaseAgent
 from equilibration.utils.sim_utils import launch_sim, kill_sim
 
@@ -30,7 +29,7 @@ def update_item(request: str):
     return {"Response: ": response}
 
 
-# For debugging purposes, create dedicated endpoint for each skill
+# For debugging purposes, create a dedicated endpoint for each skill
 # TODO: How to update when agent.all_skills updates
 for skill_name, skill_class in agent.all_skills.items():
     @app.get("/" + skill_name)
