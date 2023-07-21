@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 from omni.isaac.franka.controllers import PickPlaceController
 
-from equilibration.skills import BaseSkill
+from skills import BaseSkill
 
 
 class PickPlaceArgsSchema(BaseModel):

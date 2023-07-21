@@ -1,4 +1,4 @@
-from equilibration.skills import BaseSkill
+from skills import BaseSkill
 
 
 class TrainRlModel(BaseSkill):

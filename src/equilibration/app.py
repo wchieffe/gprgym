@@ -2,8 +2,8 @@ from fastapi import FastAPI
 import logging
 import uvicorn
 
-from equilibration.agents import BaseAgent
-from equilibration.utils.sim_utils import launch_sim, kill_sim
+from agents import BaseAgent
+from utils.sim_utils import launch_sim, kill_sim
 
 app = FastAPI()
 agent = BaseAgent()
