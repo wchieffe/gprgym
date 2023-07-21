@@ -1,7 +1,11 @@
 import numpy as np
 from pydantic import BaseModel, Field
 
-from omni.isaac.franka.controllers import PickPlaceController
+try:
+    # TODO: Better way to ignore import errors when agent is loading the skill
+    from omni.isaac.franka.controllers import PickPlaceController
+except:
+    pass
 
 from skills import BaseSkill
 
@@ -14,8 +18,9 @@ class PickPlaceArgsSchema(BaseModel):
 
 class PickPlaceSkill(BaseSkill):
     def  __init__(self):
-        super().__init__()
         self.description = "Pick up the cube and place it in another location."
+        self.args_schema = PickPlaceArgsSchema
+        super().__init__()
 
     def execute(self, args, scene):
         controller = PickPlaceController(

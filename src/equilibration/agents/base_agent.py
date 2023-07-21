@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from langchain.agents import AgentType, initialize_agent
 from langchain.llms import OpenAI
+
 import zmq
 
 from utils.skill_utils import load_skills
@@ -25,7 +26,8 @@ class BaseAgent:
 
         # Initialize the LLM agent using those tools
         llm = OpenAI(temperature=0)
-        self.agent = initialize_agent(self.tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
+        print("tools: ", self.tools)
+        self.agent = initialize_agent(self.tools, llm, agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
 
 
     def user_input(self, prompt: str):

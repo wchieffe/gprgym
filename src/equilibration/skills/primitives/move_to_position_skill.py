@@ -2,7 +2,11 @@ import numpy as np
 from pydantic import BaseModel, Field
 from typing import List
 
-from omni.isaac.franka.controllers import RMPFlowController
+try:
+    # TODO: Better way to ignore import errors when agent is loading the skill
+    from omni.isaac.franka.controllers import RMPFlowController
+except:
+    pass
 
 from skills import BaseSkill
 
