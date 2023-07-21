@@ -7,7 +7,9 @@ class BaseSkill(ABC):
     def __init__(self):
         self.class_name = type(self).__name__
 
-        if self.description == None:
+        try:
+            assert self.description != None
+        except:
             raise ValueError(f"Must define description in {self.class_name}.")
 
         # args_schema should be defined in the inherited class unless there are no args

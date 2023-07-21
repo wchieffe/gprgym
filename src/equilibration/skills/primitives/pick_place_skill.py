@@ -12,7 +12,7 @@ class PickPlaceArgsSchema(BaseModel):
     z: float = Field()
 
 
-class PickPlace(BaseSkill):
+class PickPlaceSkill(BaseSkill):
     def  __init__(self):
         super().__init__()
         self.description = "Pick up the cube and place it in another location."

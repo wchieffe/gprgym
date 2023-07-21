@@ -3,9 +3,10 @@ import subprocess
 
 
 def launch_sim():
-    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scripts\launch_sim.py')
+    python_path = "C:\\Users\ov-user\AppData\Local\ov\pkg\isaac_sim-2022.2.1\python.exe" # TODO: fix this
+    script_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scripts\launch_sim.py')
     process = subprocess.Popen(
-        ["python", path],
+        [python_path, script_path],
         start_new_session=True
     )
     with open("isaac_sim.pid", "w") as f:

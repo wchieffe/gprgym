@@ -17,7 +17,7 @@ class MoveToPositionArgsSchema(BaseModel):
     waypoints: List[Coordinates]
 
 
-class MoveToPosition(BaseSkill):
+class MoveToPositionSkill(BaseSkill):
     def  __init__(self):
         self.description = "Move the robot's end effector to a series of waypoints."
         self.args_schema = MoveToPositionArgsSchema

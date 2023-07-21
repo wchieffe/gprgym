@@ -3,7 +3,7 @@ from langchain.agents import AgentType, initialize_agent
 from langchain.llms import OpenAI
 import zmq
 
-from equilibration.utils.skill_utils import load_skills
+from utils.skill_utils import load_skills
 
 load_dotenv()
 
