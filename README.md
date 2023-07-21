@@ -6,4 +6,4 @@ Git pull
 2. Create OpenAI API token
 3. Create .env file
 4. pip install requirements.txt
-5. Run app.py
+5. Run app.py from inside \equilibration

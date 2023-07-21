@@ -41,12 +41,13 @@ if __name__ == "__main__":
     socket = context.socket(zmq.REP)
     socket.bind("tcp://*:5558")
 
+    all_skills = load_skills()
+
     while True:
         print("Waiting for event")
         payload = socket.recv_json()
 
         # Execute skill specified in the zmq payload
-        all_skills = load_skills()
         skill_class = all_skills[payload["skill_name"]]
         skill_class.execute(payload["args"], scene)
 

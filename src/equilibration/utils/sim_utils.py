@@ -3,8 +3,9 @@ import subprocess
 
 
 def launch_sim():
+    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scripts\launch_sim.py')
     process = subprocess.Popen(
-        ["python", "sim\launch_sim.py"],
+        ["python", path],
         start_new_session=True
     )
     with open("isaac_sim.pid", "w") as f:
