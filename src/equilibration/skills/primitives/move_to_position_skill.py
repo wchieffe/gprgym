@@ -1,8 +1,11 @@
 import numpy as np
 from pydantic import BaseModel, Field
 from typing import List
-
-from omni.isaac.franka.controllers import RMPFlowController
+try:
+    # TODO: Better way to ignore import errors when agent is loading the skill
+    from omni.isaac.franka.controllers import RMPFlowController
+except:
+    pass
 
 from skills import BaseSkill
 
@@ -24,7 +27,7 @@ class MoveToPositionSkill(BaseSkill):
         super().__init__()
 
 
-    def execute(self, args, scene):
+    def execute(self, args: MoveToPositionArgsSchema, scene):
         controller = RMPFlowController(
             name = "rmp_flow_controller",
             robot_articulation = scene.franka,

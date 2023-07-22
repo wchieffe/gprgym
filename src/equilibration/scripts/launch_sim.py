@@ -49,7 +49,8 @@ if __name__ == "__main__":
 
         # Execute skill specified in the zmq payload
         skill_class = all_skills[payload["skill_name"]]
-        skill_class.execute(payload["args"], scene)
+        args = skill_class.args_schema.parse_raw(payload["args"])
+        skill_class.execute(args, scene)
 
         response = b"Success!"
         socket.send(response)

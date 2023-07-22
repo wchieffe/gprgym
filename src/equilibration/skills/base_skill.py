@@ -27,7 +27,11 @@ class BaseSkill(ABC):
 
     def as_tool(self, socket):
         def tool_func(args: self.args_schema = None):
-            payload = {"skill_name": self.class_name, "args": args}
+            payload = {"skill_name": self.class_name}
+            if args is not None:
+                payload["args"] = args.json()
+            else:
+                payload["args"] = None
             socket.send_json(payload)
             message = socket.recv()
             return str(message)

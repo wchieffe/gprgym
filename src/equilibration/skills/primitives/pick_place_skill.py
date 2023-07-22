@@ -17,7 +17,7 @@ class PickPlaceSkill(BaseSkill):
         super().__init__()
         self.description = "Pick up the cube and place it in another location."
 
-    def execute(self, args, scene):
+    def execute(self, args: PickPlaceArgsSchema, scene):
         controller = PickPlaceController(
             name="pick_place_controller",
             gripper=scene.franka.gripper,

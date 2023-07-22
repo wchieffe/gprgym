@@ -34,7 +34,11 @@ def update_item(request: str):
 for skill_name, skill_class in agent.all_skills.items():
     @app.get("/" + skill_name)
     def send_command(args: skill_class.args_schema = None):
-        payload = {"skill_name": skill_name, "args": args}
+        payload = {"skill_name": skill_name}
+        if args is not None:
+            payload["args"] = args.json()
+        else:
+            payload["args"] = None
         agent.socket.send_json(payload)
         message = agent.socket.recv()
         return {"result": message}
