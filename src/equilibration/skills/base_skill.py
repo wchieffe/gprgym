@@ -1,6 +1,10 @@
 from abc import ABC
-from langchain.tools import StructuredTool
 import logging
+try:
+    # TODO: Better way to ignore import errors when sim controller is loading the skills
+    from langchain.tools import StructuredTool
+except:
+    pass
 
 
 class BaseSkill(ABC):
@@ -40,5 +44,5 @@ class BaseSkill(ABC):
             func = tool_func,
             name = self.class_name,
             description = self.description,
-            args_schema=self.args_schema,
+            args_schema=self.args_schema, # TODO: Look into langchain's expected format of args schema
         )

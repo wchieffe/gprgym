@@ -32,7 +32,7 @@ def update_item(request: str):
 # For debugging purposes, create a dedicated endpoint for each skill
 # TODO: How to update when agent.all_skills updates
 for skill_name, skill_class in agent.all_skills.items():
-    @app.get("/" + skill_name)
+    @app.post("/" + skill_name)
     def send_command(args: skill_class.args_schema = None):
         payload = {"skill_name": skill_name}
         if args is not None:
