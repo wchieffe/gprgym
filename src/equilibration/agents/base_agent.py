@@ -31,7 +31,7 @@ class BaseAgent:
 
 
     def user_input(self, prompt: str):
-        # TODO: Format prompt ("this is what the scene looks like. you are controlling a franka robot."). 
+        # TODO: Format prompt... "You are controlling a franka robot arm. {make its gripper look like it's waving}" 
         # No need to add tools to it; langchain does that
         response = self.agent.run(prompt)
         return response

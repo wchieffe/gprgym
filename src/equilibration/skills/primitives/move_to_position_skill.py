@@ -36,15 +36,16 @@ class MoveToPositionSkill(BaseSkill):
         articulation_controller = scene.franka.get_articulation_controller()
 
         waypoints = np.array(args.waypoints)
-        for i in range(len(waypoints)):
-            gripper_target_position = waypoints[i]
+        for waypoint in args.waypoints:
+            gripper_target_position = np.array([waypoint.x, waypoint.y, waypoint.z])
             while True:
                 gripper_current_position = scene.franka.gripper.get_world_pose()[0]
                 diff = np.sum(np.abs(gripper_current_position - gripper_target_position))
                 if diff < 0.1:
                     break
+                # TODO: timeout in case it's unable to reach the target position
                 actions = controller.forward(
                     target_end_effector_position = gripper_target_position
                 )
                 articulation_controller.apply_action(actions)
-                self.world.step(render=True)
+                scene.world.step(render=True)

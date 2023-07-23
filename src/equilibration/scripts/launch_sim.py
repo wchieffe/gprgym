@@ -2,6 +2,7 @@
 from omni.isaac.kit import SimulationApp
 simulation_app = SimulationApp({"headless": False})
 
+import json
 import numpy as np
 import signal
 import zmq
@@ -49,7 +50,11 @@ if __name__ == "__main__":
 
         # Execute skill specified in the zmq payload
         skill_class = all_skills[payload["skill_name"]]
-        args = skill_class.args_schema.parse_raw(payload["args"])
+        if payload["args"] is not None:
+            args_dict = json.loads(payload["args"])
+            args = skill_class.args_schema(**args_dict)
+        else:
+            args = None
         skill_class.execute(args, scene)
 
         response = b"Success!"
