@@ -1,4 +1,5 @@
 from abc import ABC
+import json
 import logging
 try:
     # TODO: Better way to ignore import errors when sim controller is loading the skills
@@ -30,10 +31,11 @@ class BaseSkill(ABC):
 
 
     def as_tool(self, socket):
-        def tool_func(args: self.args_schema = None):
+        # def tool_func(args: self.args_schema = None):
+        def tool_func(**kwargs):
             payload = {"skill_name": self.class_name}
-            if args is not None:
-                payload["args"] = args.json()
+            if kwargs:
+                payload["args"] = json.dumps(kwargs)
             else:
                 payload["args"] = None
             socket.send_json(payload)
@@ -44,5 +46,5 @@ class BaseSkill(ABC):
             func = tool_func,
             name = self.class_name,
             description = self.description,
-            args_schema=self.args_schema, # TODO: Look into langchain's expected format of args schema
+            args_schema=self.args_schema,
         )

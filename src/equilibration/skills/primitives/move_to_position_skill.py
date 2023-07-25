@@ -36,7 +36,7 @@ class MoveToPositionSkill(BaseSkill):
         articulation_controller = scene.franka.get_articulation_controller()
 
         waypoints = np.array(args.waypoints)
-        for waypoint in args.waypoints:
+        for waypoint in waypoints:
             gripper_target_position = np.array([waypoint.x, waypoint.y, waypoint.z])
             while True:
                 gripper_current_position = scene.franka.gripper.get_world_pose()[0]

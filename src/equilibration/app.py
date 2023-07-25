@@ -31,6 +31,7 @@ def update_item(request: str):
 
 # For debugging purposes, create a dedicated endpoint for each skill
 # TODO: How to update when agent.all_skills updates
+# TODO: Use skill_class.as_tool()._run(args)
 def create_send_command(skill_name: str, args_schema):
     def send_command(args: args_schema = None):
         payload = {"skill_name": skill_name}
