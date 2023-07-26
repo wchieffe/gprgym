@@ -31,7 +31,6 @@ class BaseSkill(ABC):
 
 
     def as_tool(self, socket):
-        # def tool_func(args: self.args_schema = None):
         def tool_func(**kwargs):
             payload = {"skill_name": self.class_name}
             if kwargs:

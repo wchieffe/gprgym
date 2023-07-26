@@ -31,7 +31,6 @@ def update_item(request: str):
 
 # For debugging purposes, create a dedicated endpoint for each skill
 # TODO: How to update when agent.all_skills updates
-# TODO: Use skill_class.as_tool()._run(args)
 def create_send_command(skill_name: str, args_schema):
     def send_command(args: args_schema = None):
         payload = {"skill_name": skill_name}
@@ -44,8 +43,9 @@ def create_send_command(skill_name: str, args_schema):
         return {"result": message}
     return send_command
 for skill_name, skill_class in agent.all_skills.items():
-    send_command_func = create_send_command(skill_name, skill_class.args_schema)
-    app.add_api_route("/" + skill_name, send_command_func, methods=["POST"], response_model=None)
+    tool_func = create_send_command(skill_name, skill_class.args_schema)
+    # tool_func = skill_class.as_tool(agent.socket)._run # How to specify args_schema
+    app.add_api_route("/" + skill_name, tool_func, methods=["POST"], response_model=None)
 
 
 if __name__ == "__main__":

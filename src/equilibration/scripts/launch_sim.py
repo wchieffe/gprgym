@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
         # Execute skill specified in the zmq payload
         skill_class = all_skills[payload["skill_name"]]
-        if payload["args"] is not None:
+        if payload["args"]:
             args_dict = json.loads(payload["args"])
             args = skill_class.args_schema(**args_dict)
         else:
