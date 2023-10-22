@@ -12,9 +12,9 @@ from skills import BaseSkill
 
 
 class Coordinates(BaseModel):
-    x: float = Field()
-    y: float = Field()
-    z: float = Field()
+    x: float = Field(None, ge=-1, le=1)
+    y: float = Field(None, ge=-1, le=1)
+    z: float = Field(None, ge=0.1, le=1)
 
 
 class MoveToPositionArgsSchema(BaseModel):

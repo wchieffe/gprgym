@@ -11,9 +11,9 @@ from skills import BaseSkill
 
 
 class PickPlaceArgsSchema(BaseModel):
-    x: float = Field()
-    y: float = Field()
-    z: float = Field()
+    x: float = Field(None, ge=-1, le=1)
+    y: float = Field(None, ge=-1, le=1)
+    z: float = Field(None, ge=0, le=1)
 
 
 class PickPlaceSkill(BaseSkill):

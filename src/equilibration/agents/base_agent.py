@@ -31,6 +31,6 @@ class BaseAgent:
 
 
     def user_input(self, prompt: str):
-        request = f"You are controlling a franka robot arm. {prompt}"
-        response = self.agent.run(request)
+        # request = f"You are controlling a franka robot arm. {prompt}"
+        response = self.agent.run(prompt)
         return response
