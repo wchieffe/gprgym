@@ -1,7 +1,5 @@
 ## Demo
-<video width="320" height="240" controls>
-  <source src="wave-demo.mp4" type="video/mp4">
-</video>
+[![Watch the video](frame.png)](wave-demo.mp4)
 
 ## Installation
 1. Deploy an Omniverse Virtual Workstation on AWS: https://docs.omniverse.nvidia.com/nucleus/latest/enterprise/cloud_aws_vdi.html
