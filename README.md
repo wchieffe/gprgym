@@ -1,5 +1,5 @@
 ## Demo
-[![Watch the video](frame.png)](wave-demo.mp4)
+![](wave-demo.mp4)
 
 ## Installation
 1. Deploy an Omniverse Virtual Workstation on AWS: https://docs.omniverse.nvidia.com/nucleus/latest/enterprise/cloud_aws_vdi.html
